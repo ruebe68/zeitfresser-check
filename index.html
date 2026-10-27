@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Zeitfresser-Check · Rübsteck Consulting</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* Layout: eine Frage pro Bildschirm, Stationsleiste oben, ruhige Spalte von max. 640px */
+:root {
+  --bg: #EEF2F1;
+  --surface: #FFFFFF;
+  --ink: #16242A;
+  --muted: #5B6B70;
+  --line: #CCD7D5;
+  --accent: #0E6B6E;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #D7ECEA;
+  --mark: #F3D27A;
+  --danger: #A63D2F;
+  --f-display: "Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1A1D; --surface: #17262A; --ink: #E6EEED; --muted: #9AAEB0; --line: #2C3F43;
+    --accent: #4FB8B2; --accent-ink: #08201F; --accent-soft: #1D3B3C; --mark: #8C7430; --danger: #E08572;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1A1D; --surface: #17262A; --ink: #E6EEED; --muted: #9AAEB0; --line: #2C3F43;
+  --accent: #4FB8B2; --accent-ink: #08201F; --accent-soft: #1D3B3C; --mark: #8C7430; --danger: #E08572;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 17px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 48px;
+}
+.wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+header.top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.brand { font-family: var(--f-display); font-weight: 700; font-size: 15px; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+.saved { font-size: 13px; color: var(--muted); }
+.stations { display: grid; grid-template-columns: repeat(var(--n, 10), 1fr); gap: 4px; }
+.stations span { height: 6px; border-radius: 3px; background: var(--line); }
+.stations span.done { background: var(--accent); }
+.stations span.now { background: var(--mark); }
+.stationlabel { font-size: 13px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+h1, h2 { font-family: var(--f-display); font-weight: 700; line-height: 1.2; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(28px, 6vw, 38px); }
+h2 { font-size: clamp(22px, 4.6vw, 28px); }
+p { margin: 0; }
+.hint { color: var(--muted); font-size: 15px; }
+label.f { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 15px; }
+input[type=text], input[type=number], textarea, select {
+  font: inherit; font-weight: 400; color: var(--ink); background: var(--bg); border: 1px solid var(--line);
+  border-radius: 10px; padding: 12px 14px; width: 100%; min-width: 0;
+}
+textarea { min-height: 130px; resize: vertical; }
+input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible { outline: 3px solid var(--mark); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: inherit; font-size: 15px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.scale { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.scale .chip { border-radius: 10px; padding: 12px 0; text-align: center; }
+.scale-ends { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.nav { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.btn { font: inherit; font-weight: 700; border-radius: 10px; padding: 12px 20px; cursor: pointer; border: 1px solid var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); }
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn:disabled { opacity: .45; cursor: default; }
+.tasks { display: flex; flex-direction: column; gap: 12px; }
+.task { display: grid; grid-template-columns: 1fr; gap: 8px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg); }
+.task .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.task .row > * { min-width: 0; }
+.task .sum { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.task .sum b { color: var(--ink); }
+.total { font-family: var(--f-display); font-size: 20px; font-variant-numeric: tabular-nums; background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; }
+.total small { display: block; font-family: var(--f-body); font-size: 14px; color: var(--muted); }
+.mode { display: flex; gap: 8px; flex-wrap: wrap; }
+ol.plan { margin: 0; padding-left: 22px; display: grid; gap: 4px; color: var(--muted); }
+ol.plan b { color: var(--ink); font-weight: 700; }
+.note { font-size: 14px; color: var(--muted); border-left: 3px solid var(--mark); padding-left: 12px; }
+pre.out { white-space: pre-wrap; font-family: var(--f-body); font-size: 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 14px; max-height: 320px; overflow: auto; margin: 0; }
+.err { color: var(--danger); font-size: 14px; }
+footer { font-size: 13px; color: var(--muted); text-align: center; }
+@media (prefers-reduced-motion: no-preference) { .card { animation: in .25s ease-out; } @keyframes in { from { transform: translateY(6px); } to { transform: none; } } }
+details.legal { font-size: 13px; color: var(--muted); }
+details.legal summary { cursor: pointer; text-align: center; }
+details.legal div { display: grid; gap: 8px; padding-top: 10px; }
+details.legal a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <span class="brand">Zeitfresser-Check</span>
+    <span class="saved" id="saved" aria-live="polite"></span>
+  </header>
+  <div id="progress"></div>
+  <main id="screen" class="card"></main>
+  <footer id="foot">Rübsteck Consulting · Ihre Antworten bleiben vertraulich und werden nur für die Auswertung genutzt.</footer>
+  <details class="legal">
+    <summary>Impressum und Datenschutz</summary>
+    <div>
+      <p><b>Impressum:</b> Rübsteck Consulting, Inhaberin Andrea Rübsteck, Ferdinand-Scheel-Ring 18, 24976 Handewitt · E-Mail: andrea@ruebsteck-consulting.de · Telefon: +49 176 46510703 · USt-IdNr. DE271853819</p>
+      <p><b>Datenschutz:</b> Verantwortlich ist Rübsteck Consulting (Anschrift oben). Ihre Antworten werden zur Vorbereitung eines Beratungsgesprächs gespeichert (Art. 6 Abs. 1 lit. b DSGVO) – in einer Google-Tabelle von Rübsteck Consulting (Google Ireland Ltd.) und zwischendurch im Speicher Ihres Browsers. Die Seite wird über GitHub Pages (GitHub Inc.) ausgeliefert; dabei wird technisch Ihre IP-Adresse übertragen. Es werden keine Cookies und kein Tracking eingesetzt. Die Antworten werden nach Abschluss der Beratung, spätestens nach 12 Monaten, gelöscht. Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch sowie auf Beschwerde bei einer Aufsichtsbehörde. Schreiben Sie dazu einfach an andrea@ruebsteck-consulting.de.</p>
+    </div>
+  </details>
+</div>
+
+<script>
+(function () {
+  // ---------- Anrede ----------
+  var hash = (location.hash || "").replace("#", "").toLowerCase();
+  var SIE = hash === "sie";
+  function t(du, sie) { return SIE ? sie : du; }
+  document.getElementById("foot").textContent = "Rübsteck Consulting · " + t("Deine", "Ihre") + " Antworten bleiben vertraulich und werden nur für die Auswertung genutzt.";
+
+  // ---------- Fragen ----------
+  var SECTIONS = ["Start", "Alltag", "Was nervt", "Immer wieder", "Zeit", "Geld", "Kunden", "Team", "Werkzeuge", "Grenzen", "Wunsch"];
+  var Q = [
+    { id: "alltag", sec: 1, type: "text",
+      q: t("Beschreib einen ganz normalen Arbeitstag – vor allem das, was neben Deiner eigentlichen Arbeit passiert.", "Beschreiben Sie einen ganz normalen Arbeitstag – vor allem das, was neben Ihrer eigentlichen Arbeit passiert."),
+      hint: t("Stichworte reichen. Zum Beispiel: morgens Mails, mittags Rückrufe, abends Listen pflegen.", "Stichworte reichen. Zum Beispiel: morgens Mails, mittags Rückrufe, abends Listen pflegen.") },
+    { id: "buerozeit", sec: 1, type: "chips",
+      q: t("Wie viele Stunden pro Woche gehen bei Dir für Büro und Organisation drauf?", "Wie viele Stunden pro Woche gehen bei Ihnen für Büro und Organisation drauf?"),
+      options: ["unter 5", "5–10", "10–20", "20–30", "über 30"] },
+    { id: "nervt", sec: 2, type: "multi", other: true,
+      q: t("Was nervt Dich am meisten?", "Was nervt Sie am meisten?"),
+      hint: t("Tipp alles an, was passt.", "Wählen Sie alles, was passt."),
+      options: ["Telefon und Rückrufe", "E-Mails", "Termine absprechen und verschieben", "Absagen und Ausfälle", "Rechnungen und Mahnungen", "Dienstplan und Vertretung", "Daten abtippen oder übertragen", "Immer gleiche Kundenfragen", "Angebote schreiben", "Social Media", "Ablage und Papierkram", "Behörden und Formulare"] },
+    { id: "nervt_konkret", sec: 2, type: "text",
+      q: t("Erzähl von der letzten Situation, die Dich richtig genervt hat.", "Erzählen Sie von der letzten Situation, die Sie richtig genervt hat."),
+      hint: t("Was ist passiert, wie lange hat es gedauert, was hättest Du lieber gemacht?", "Was ist passiert, wie lange hat es gedauert, was hätten Sie lieber gemacht?") },
+    { id: "aufgaben", sec: 3, type: "tasks",
+      q: t("Welche Aufgaben machst Du immer wieder gleich?", "Welche Aufgaben erledigen Sie immer wieder gleich?"),
+      hint: t("Bis zu sechs Aufgaben. Schätz grob, wie oft und wie lange – wir rechnen die Stunden pro Jahr aus.", "Bis zu sechs Aufgaben. Schätzen Sie grob, wie oft und wie lange – wir rechnen die Stunden pro Jahr aus.") },
+    { id: "zeitfresser", sec: 4, type: "text",
+      q: t("Was kostet Dich die meiste Zeit, obwohl es eigentlich einfach sein müsste?", "Was kostet Sie die meiste Zeit, obwohl es eigentlich einfach sein müsste?") },
+    { id: "aufschieben", sec: 4, type: "text",
+      q: t("Was schiebst Du am liebsten vor Dir her?", "Was schieben Sie am liebsten vor sich her?"),
+      hint: t("Das, was am Sonntagabend noch auf der Liste steht.", "Das, was am Sonntagabend noch auf der Liste steht.") },
+    { id: "geld", sec: 5, type: "multi", other: true,
+      q: t("Wo verlierst Du heute Geld?", "Wo verlieren Sie heute Geld?"),
+      options: ["Leere Plätze oder Termine", "Kunden, die nicht erscheinen", "Anfragen, auf die keiner rechtzeitig antwortet", "Offene oder späte Zahlungen", "Kündigungen, die man hätte verhindern können", "Fehler und Nacharbeit", "Überstunden", "Zu wenig Bewertungen und Sichtbarkeit"] },
+    { id: "mehr_raus", sec: 5, type: "text",
+      q: t("Wo könntest Du mehr rausholen, wenn Du mehr Zeit hättest?", "Wo könnten Sie mehr herausholen, wenn Sie mehr Zeit hätten?"),
+      hint: t("Ein neues Angebot, mehr Kunden, höhere Preise, ein zweiter Standort …", "Ein neues Angebot, mehr Kunden, höhere Preise, ein zweiter Standort …") },
+    { id: "kanaele", sec: 6, type: "multi", other: true,
+      q: t("Wie melden sich Kunden und Interessenten bei Dir?", "Wie melden sich Kunden und Interessenten bei Ihnen?"),
+      options: ["Telefon", "E-Mail", "WhatsApp", "Formular auf der Website", "Instagram oder Facebook", "Persönlich vor Ort"] },
+    { id: "anfragen_woche", sec: 6, type: "chips",
+      q: t("Wie viele Anfragen bekommst Du ungefähr pro Woche?", "Wie viele Anfragen bekommen Sie ungefähr pro Woche?"),
+      options: ["unter 10", "10–30", "30–60", "60–100", "über 100"] },
+    { id: "fragen_immer", sec: 6, type: "text",
+      q: t("Welche Fragen hörst Du immer wieder?", "Welche Fragen hören Sie immer wieder?"),
+      hint: t("Zum Beispiel: Was kostet das? Ist noch ein Platz frei? Wo kann ich parken?", "Zum Beispiel: Was kostet das? Ist noch ein Platz frei? Wo kann ich parken?") },
+    { id: "ausfall", sec: 7, type: "text",
+      q: t("Was bleibt liegen, wenn Du eine Woche krank bist?", "Was bleibt liegen, wenn Sie eine Woche krank sind?") },
+    { id: "team", sec: 7, type: "chips",
+      q: t("Wie viele Menschen arbeiten mit Dir zusammen?", "Wie viele Menschen arbeiten mit Ihnen zusammen?"),
+      options: ["Ich allein", "2–5", "6–15", "16–50", "über 50"] },
+    { id: "team_aufwand", sec: 7, type: "text",
+      q: t("Was kostet Dich rund ums Team Zeit?", "Was kostet Sie rund ums Team Zeit?"),
+      hint: t("Dienstplan, Vertretung, Stunden erfassen, Infos weitergeben …", "Dienstplan, Vertretung, Stunden erfassen, Infos weitergeben …") },
+    { id: "werkzeuge", sec: 8, type: "multi", other: true,
+      q: t("Mit welchen Programmen arbeitest Du?", "Mit welchen Programmen arbeiten Sie?"),
+      options: ["Google (Gmail, Drive, Tabellen)", "Microsoft 365 (Outlook, Excel)", "Airtable", "WhatsApp Business", "Buchhaltungsprogramm", "Branchensoftware", "Website mit Formularen", "Vieles auf Papier"] },
+    { id: "daten", sec: 9, type: "multi",
+      q: t("Welche Daten kommen in Deinen Abläufen vor?", "Welche Daten kommen in Ihren Abläufen vor?"),
+      hint: t("Wichtig für den Datenschutz. Kein Problem – es bestimmt nur, wie wir etwas bauen.", "Wichtig für den Datenschutz. Kein Problem – es bestimmt nur, wie wir etwas bauen."),
+      options: ["Namen und Kontaktdaten", "Daten von Kindern", "Gesundheitsangaben", "Bank- und Zahlungsdaten", "Mitarbeiterdaten und Löhne", "Nichts Besonderes"] },
+    { id: "nie_allein", sec: 9, type: "text",
+      q: t("Was darf ein digitaler Helfer auf keinen Fall allein entscheiden?", "Was darf ein digitaler Helfer auf keinen Fall allein entscheiden?") },
+    { id: "gern_allein", sec: 9, type: "text",
+      q: t("Und was darf er ruhig ganz allein erledigen?", "Und was darf er ruhig ganz allein erledigen?") },
+    { id: "offenheit", sec: 9, type: "scale",
+      q: t("Wie offen bist Du für digitale Helfer im Alltag?", "Wie offen sind Sie für digitale Helfer im Alltag?"),
+      ends: ["skeptisch", "sofort los"] },
+    { id: "perfekter_tag", sec: 10, type: "text",
+      q: t("Wie würde Dein perfekter Arbeitstag aussehen?", "Wie würde Ihr perfekter Arbeitstag aussehen?"),
+      hint: t("Was machst Du morgens, was mittags – und was fällt ganz weg?", "Was machen Sie morgens, was mittags – und was fällt ganz weg?") },
+    { id: "zehn_stunden", sec: 10, type: "text",
+      q: t("Stell Dir vor, Du sparst 10 Stunden pro Woche. Was machst Du mit der Zeit?", "Stellen Sie sich vor, Sie sparen 10 Stunden pro Woche. Was machen Sie mit der Zeit?"),
+      hint: t("Mehr Kurse, neue Kunden, Familie, Urlaub – alles ist erlaubt.", "Mehr Kunden, ein neues Angebot, Familie, Urlaub – alles ist erlaubt.") },
+    { id: "wunsch", sec: 10, type: "text",
+      q: t("Wenn Du eine Sache nie wieder selbst machen müsstest – welche wäre das?", "Wenn Sie eine Sache nie wieder selbst machen müssten – welche wäre das?"),
+      hint: t("Die wichtigste Frage. Gern ausführlich.", "Die wichtigste Frage. Gern ausführlich.") }
+  ];
+  var FREQ = { "täglich": 250, "mehrmals pro Woche": 150, "wöchentlich": 50, "alle zwei Wochen": 25, "monatlich": 12, "quartalsweise": 4 };
+
+  // ---------- Zustand ----------
+  var KEY = "zeitfresser-check-v1";
+  var state = { meta: { firma: "", person: "", rolle: "", branche: "" }, a: {}, tasks: [], step: -1, status: "in Arbeit" };
+  try { var s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.meta) state = s; } catch (e) {}
+  state.anrede = SIE ? "Sie" : "Du";
+  function keepLocal() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  // ---------- Speichern (Google-Tabelle) ----------
+  // Web-App-Adresse des Google-Skripts (endet auf /exec). Leer = nur Kopieren am Ende.
+  var ENDPOINT = "";
+  var db = !!ENDPOINT, chain = Promise.resolve(), lastSaved = "";
+  if (!state.sid) { state.sid = "b-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10); keepLocal(); }
+  var savedEl = document.getElementById("saved");
+  function slug(s) { return (s || "ohne-name").toLowerCase().replace(/ä/g, "ae").replace(/ö/g, "oe").replace(/ü/g, "ue").replace(/ß/g, "ss").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "ohne-name"; }
+  function payload() {
+    return { firma: state.meta.firma, person: state.meta.person, rolle: state.meta.rolle, branche: state.meta.branche,
+      anrede: state.anrede, antworten: state.a, aufgaben: state.tasks, stundenProJahr: totalHours(),
+      status: state.status, schritt: state.step, aktualisiert: new Date().toISOString() };
+  }
+  function save() {
+    keepLocal();
+    if (!db || !state.meta.firma) return Promise.resolve(false);
+    var p = payload(); var sig = JSON.stringify([p.antworten, p.aufgaben, p.status, p.schritt, p.firma, p.person, p.rolle, p.branche]);
+    p.id = state.sid + "-" + slug(state.meta.firma);
+    if (sig === lastSaved) return Promise.resolve(true);
+    chain = chain.then(function () {
+      savedEl.textContent = "Wird gespeichert …";
+      // text/plain: einfache Anfrage ohne Vorabprüfung, die Google-Web-App liest den Text als JSON
+      return fetch(ENDPOINT, { method: "POST", body: JSON.stringify(p) }).then(function (r) { return r.json(); }).then(function (j) {
+        if (!j || !j.ok) throw new Error("abgelehnt");
+        lastSaved = sig; savedEl.textContent = "Gespeichert"; return true;
+      }).catch(function () {
+        savedEl.textContent = "Nur auf diesem Gerät gespeichert"; return false;
+      });
+    });
+    return chain;
+  }
+
+  // ---------- Hilfen ----------
+  function el(tag, attrs, kids) {
+    var n = document.createElement(tag);
+    for (var k in (attrs || {})) { if (k === "text") n.textContent = attrs[k]; else if (k.slice(0, 2) === "on") n.addEventListener(k.slice(2), attrs[k]); else n.setAttribute(k, attrs[k]); }
+    (kids || []).forEach(function (c) { if (c) n.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return n;
+  }
+  function taskHours(tk) { var f = FREQ[tk.freq] || 0; var m = parseFloat(tk.min) || 0; return f * m / 60; }
+  function totalHours() { return Math.round(state.tasks.reduce(function (s, tk) { return s + taskHours(tk); }, 0)); }
+  function fmt(n) { return Math.round(n).toLocaleString("de-DE"); }
+
+  var screen = document.getElementById("screen");
+  var progress = document.getElementById("progress");
+
+  function renderProgress() {
+    progress.innerHTML = "";
+    if (state.step < 0 || state.step > Q.length) return;
+    var sec = state.step < Q.length ? Q[state.step].sec : SECTIONS.length;
+    var bar = el("div", { class: "stations", style: "--n:" + (SECTIONS.length - 1), "aria-hidden": "true" });
+    for (var i = 1; i < SECTIONS.length; i++) bar.appendChild(el("span", { class: i < sec ? "done" : (i === sec ? "now" : "") }));
+    var label = state.step < Q.length ? "Station " + sec + " von " + (SECTIONS.length - 1) + " · " + SECTIONS[sec] + " · Frage " + (state.step + 1) + " von " + Q.length : "Fertig";
+    progress.appendChild(el("div", { style: "display:flex;flex-direction:column;gap:8px" }, [el("span", { class: "stationlabel", text: label }), bar]));
+  }
+
+  function go(n) { state.step = n; save(); render(); window.scrollTo(0, 0); var h = screen.querySelector("h1,h2"); if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: true }); } }
+
+  function render() {
+    renderProgress();
+    screen.innerHTML = "";
+    if (state.step < 0) return renderStart();
+    if (state.step >= Q.length) return renderEnd();
+    renderQuestion(Q[state.step]);
+  }
+
+  // ---------- Start ----------
+  function renderStart() {
+    screen.appendChild(el("h1", { text: t("Wo geht Deine Zeit hin?", "Wo geht Ihre Zeit hin?") }));
+    screen.appendChild(el("p", { text: t(
+      "23 kurze Fragen, etwa 15 bis 20 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Du schreibst, desto genauer sehen wir, wo ein digitaler Helfer Dir wirklich Arbeit abnimmt – und wo nicht.",
+      "23 kurze Fragen, etwa 15 bis 20 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Sie schreiben, desto genauer sehen wir, wo ein digitaler Helfer Ihnen wirklich Arbeit abnimmt – und wo nicht.") }));
+    var plan = el("ol", { class: "plan" });
+    SECTIONS.slice(1).forEach(function (s, i) { plan.appendChild(el("li", {}, [el("b", { text: s })])); });
+    screen.appendChild(plan);
+    var fields = [["firma", "Firma", "z. B. AquaFitnessZentrum"], ["person", t("Dein Name", "Ihr Name"), ""], ["rolle", t("Deine Rolle", "Ihre Rolle"), "z. B. Inhaber, Büroleitung"], ["branche", "Branche", "z. B. Schwimmbad, Handwerk, Praxis"]];
+    fields.forEach(function (f) {
+      var inp = el("input", { type: "text", id: "m-" + f[0], placeholder: f[2], autocomplete: "off" });
+      inp.value = state.meta[f[0]] || "";
+      inp.addEventListener("input", function () { state.meta[f[0]] = inp.value.trim(); startBtn.disabled = !state.meta.firma; keepLocal(); });
+      screen.appendChild(el("label", { class: "f", for: "m-" + f[0] }, [f[1] + (f[0] === "firma" ? " *" : ""), inp]));
+    });
+    screen.appendChild(el("p", { class: "note", text: t(
+      "Bitte keine Namen von Kunden oder Mitarbeitern und keine Gesundheitsangaben eintragen. Beschreib nur, wie die Arbeit abläuft.",
+      "Bitte keine Namen von Kunden oder Mitarbeitern und keine Gesundheitsangaben eintragen. Beschreiben Sie nur, wie die Arbeit abläuft.") }));
+    if (!db) screen.appendChild(el("p", { class: "hint", text: t(
+      "Deine Antworten werden auf diesem Gerät zwischengespeichert. Am Ende kannst Du sie kopieren und per Mail schicken.",
+      "Ihre Antworten werden auf diesem Gerät zwischengespeichert. Am Ende können Sie sie kopieren und per Mail schicken.") }));
+    var startBtn = el("button", { class: "btn primary", type: "button", onclick: function () { go(firstOpen()); } }, [Object.keys(state.a).length ? "Weiter, wo ich war" : "Los geht's"]);
+    startBtn.disabled = !state.meta.firma;
+    screen.appendChild(el("div", { class: "nav" }, [el("span"), startBtn]));
+  }
+  function firstOpen() { for (var i = 0; i < Q.length; i++) { if (state.a[Q[i].id] === undefined && Q[i].type !== "tasks") return i; } return 0; }
+
+  // ---------- Frage ----------
+  function renderQuestion(q) {
+    screen.appendChild(el("h2", { text: q.q }));
+    if (q.hint) screen.appendChild(el("p", { class: "hint", text: q.hint }));
+    var val = state.a[q.id];
+
+    if (q.type === "text") {
+      var ta = el("textarea", { id: "q-" + q.id, "aria-label": q.q });
+      ta.value = val || "";
+      ta.addEventListener("input", function () { state.a[q.id] = ta.value; keepLocal(); });
+      screen.appendChild(ta);
+    }
+    if (q.type === "chips" || q.type === "multi" || q.type === "scale") {
+      var multi = q.type === "multi";
+      var opts = q.type === "scale" ? ["1", "2", "3", "4", "5"] : q.options;
+      var box = el("div", { class: q.type === "scale" ? "scale" : "chips", role: "group", "aria-label": q.q });
+      var cur = multi ? (val && val.auswahl) || [] : val;
+      opts.forEach(function (o) {
+        var on = multi ? cur.indexOf(o) >= 0 : cur === o;
+        var b = el("button", { class: "chip", type: "button", "aria-pressed": on ? "true" : "false", text: o, onclick: function () {
+          if (multi) {
+            var list = (state.a[q.id] && state.a[q.id].auswahl) || [];
+            var i = list.indexOf(o); if (i >= 0) list.splice(i, 1); else list.push(o);
+            state.a[q.id] = { auswahl: list, sonst: (state.a[q.id] && state.a[q.id].sonst) || "" };
+            b.setAttribute("aria-pressed", i >= 0 ? "false" : "true");
+          } else {
+            state.a[q.id] = o;
+            box.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", c === b ? "true" : "false"); });
+          }
+          keepLocal();
+        } });
+        box.appendChild(b);
+      });
+      screen.appendChild(box);
+      if (q.type === "scale") screen.appendChild(el("div", { class: "scale-ends" }, [el("span", { text: "1 = " + q.ends[0] }), el("span", { text: "5 = " + q.ends[1] })]));
+      if (q.other) {
+        var o2 = el("input", { type: "text", id: "q-" + q.id + "-sonst", placeholder: "Sonst noch etwas …" });
+        o2.value = (val && val.sonst) || "";
+        o2.addEventListener("input", function () { var v = state.a[q.id] || { auswahl: [] }; v.sonst = o2.value; state.a[q.id] = v; keepLocal(); });
+        screen.appendChild(o2);
+      }
+    }
+    if (q.type === "tasks") renderTasks();
+
+    var back = el("button", { class: "btn ghost", type: "button", onclick: function () { go(state.step - 1); } }, ["Zurück"]);
+    var next = el("button", { class: "btn primary", type: "button", onclick: function () { go(state.step + 1); } }, [state.step === Q.length - 1 ? "Zum Abschluss" : "Weiter"]);
+    screen.appendChild(el("div", { class: "nav" }, [back, next]));
+    screen.appendChild(el("p", { class: "hint", style: "font-size:13px", text: t("Du kannst jede Frage auch überspringen.", "Sie können jede Frage auch überspringen.") }));
+  }
+
+  function renderTasks() {
+    if (!state.tasks.length) state.tasks.push({ name: "", freq: "wöchentlich", min: "" });
+    var wrap = el("div", { class: "tasks" });
+    var total = el("div", { class: "total", "aria-live": "polite" });
+    function upd() {
+      total.innerHTML = "";
+      total.appendChild(document.createTextNode("≈ " + fmt(totalHours()) + " Stunden im Jahr"));
+      total.appendChild(el("small", { text: "Das sind etwa " + fmt(totalHours() / 8) + " volle Arbeitstage für Wiederholungen." }));
+    }
+    function draw() {
+      wrap.innerHTML = "";
+      state.tasks.forEach(function (tk, i) {
+        var name = el("input", { type: "text", id: "t-name-" + i, placeholder: "z. B. Teilnehmerlisten abgleichen" });
+        name.value = tk.name;
+        var freq = el("select", { id: "t-freq-" + i, "aria-label": "Wie oft" });
+        Object.keys(FREQ).forEach(function (f) { var o = el("option", { value: f, text: f }); if (f === tk.freq) o.selected = true; freq.appendChild(o); });
+        var min = el("input", { type: "number", id: "t-min-" + i, min: "0", step: "5", inputmode: "numeric", placeholder: "Minuten je Mal" });
+        min.value = tk.min;
+        var sum = el("div", { class: "sum" });
+        function s() { sum.innerHTML = ""; sum.appendChild(el("b", { text: fmt(taskHours(tk)) + " Std./Jahr" })); if (state.tasks.length > 1) sum.appendChild(el("button", { class: "chip", type: "button", style: "margin-left:10px;padding:2px 10px;font-size:13px", text: "entfernen", onclick: function () { state.tasks.splice(i, 1); keepLocal(); draw(); upd(); } })); }
+        name.addEventListener("input", function () { tk.name = name.value; keepLocal(); });
+        freq.addEventListener("change", function () { tk.freq = freq.value; keepLocal(); s(); upd(); });
+        min.addEventListener("input", function () { tk.min = min.value; keepLocal(); s(); upd(); });
+        s();
+        wrap.appendChild(el("div", { class: "task" }, [
+          el("label", { class: "f", for: "t-name-" + i }, ["Aufgabe " + (i + 1), name]),
+          el("div", { class: "row" }, [el("label", { class: "f", for: "t-freq-" + i }, ["Wie oft", freq]), el("label", { class: "f", for: "t-min-" + i }, ["Minuten je Mal", min])]),
+          sum
+        ]));
+      });
+      if (state.tasks.length < 6) wrap.appendChild(el("button", { class: "btn ghost", type: "button", onclick: function () { state.tasks.push({ name: "", freq: "wöchentlich", min: "" }); keepLocal(); draw(); } }, ["+ Weitere Aufgabe"]));
+    }
+    draw(); upd();
+    screen.appendChild(wrap);
+    screen.appendChild(total);
+  }
+
+  // ---------- Abschluss ----------
+  function asText() {
+    var L = ["ZEITFRESSER-CHECK", "Firma: " + state.meta.firma, "Name: " + state.meta.person, "Rolle: " + state.meta.rolle, "Branche: " + state.meta.branche, "Datum: " + new Date().toLocaleDateString("de-DE"), ""];
+    Q.forEach(function (q) {
+      if (q.type === "tasks") {
+        L.push("• " + q.q);
+        state.tasks.filter(function (tk) { return tk.name; }).forEach(function (tk) { L.push("   - " + tk.name + " · " + tk.freq + " · " + (tk.min || "?") + " Min. · ≈ " + fmt(taskHours(tk)) + " Std./Jahr"); });
+        L.push("   Summe ≈ " + fmt(totalHours()) + " Std./Jahr", "");
+        return;
+      }
+      var v = state.a[q.id], s = "";
+      if (v && typeof v === "object") s = (v.auswahl || []).join(", ") + (v.sonst ? (v.auswahl && v.auswahl.length ? "; " : "") + v.sonst : "");
+      else s = v || "";
+      L.push("• " + q.q, "   " + (s || "–"), "");
+    });
+    return L.join("\n");
+  }
+  function renderEnd() {
+    var done = state.status === "abgeschickt";
+    screen.appendChild(el("h2", { text: done ? "Danke, ist angekommen." : t("Geschafft. Danke Dir!", "Geschafft. Vielen Dank!") }));
+    var hrs = totalHours();
+    if (hrs > 0) screen.appendChild(el("div", { class: "total" }, ["≈ " + fmt(hrs) + " Stunden im Jahr", el("small", { text: t("stecken laut Deinen Angaben in wiederkehrenden Aufgaben.", "stecken laut Ihren Angaben in wiederkehrenden Aufgaben.") })]));
+    screen.appendChild(el("p", { text: t(
+      "Ich werte Deine Antworten aus und zeige Dir im nächsten Gespräch, wo ein digitaler Helfer am meisten bringt – und wo es sich nicht lohnt.",
+      "Ich werte Ihre Antworten aus und zeige Ihnen im nächsten Gespräch, wo ein digitaler Helfer am meisten bringt – und wo es sich nicht lohnt.") }));
+    var msg = el("p", { class: "err", "aria-live": "polite" });
+    var send = el("button", { class: "btn primary", type: "button", onclick: function () {
+      state.status = "abgeschickt";
+      save().then(function (ok) {
+        if (ok) { render(); }
+        else { state.status = "in Arbeit"; keepLocal(); msg.textContent = t("Senden hat hier nicht geklappt. Kopier die Antworten unten und schick sie per Mail.", "Senden hat hier nicht geklappt. Bitte kopieren Sie die Antworten unten und schicken Sie sie per Mail."); }
+      });
+    } }, ["Antworten abschicken"]);
+    var nav = el("div", { class: "nav" }, [el("button", { class: "btn ghost", type: "button", onclick: function () { go(Q.length - 1); } }, ["Zurück"])]);
+    if (db && !done) nav.appendChild(send);
+    screen.appendChild(nav);
+    screen.appendChild(msg);
+
+    var txt = asText();
+    var pre = el("pre", { class: "out", id: "out", text: txt });
+    var copyMsg = el("span", { class: "hint", "aria-live": "polite" });
+    var copy = el("button", { class: "btn ghost", type: "button", onclick: function () {
+      var ok = function () { copyMsg.textContent = "Kopiert."; };
+      var fallback = function () { var r = document.createRange(); r.selectNodeContents(pre); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); copyMsg.textContent = "Text ist markiert – jetzt Strg+C drücken."; };
+      try { navigator.clipboard.writeText(txt).then(ok, fallback); } catch (e) { fallback(); }
+    } }, ["Antworten kopieren"]);
+    screen.appendChild(el("p", { class: "hint", text: db ? t("Hier kannst Du Deine Antworten noch einmal sehen:", "Hier können Sie Ihre Antworten noch einmal sehen:") : t("Kopier Deine Antworten und schick sie per Mail an andrea@ruebsteck-consulting.de", "Bitte kopieren Sie Ihre Antworten und schicken Sie sie per Mail an andrea@ruebsteck-consulting.de") }));
+    screen.appendChild(el("div", { class: "nav" }, [copy, copyMsg]));
+    screen.appendChild(pre);
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
