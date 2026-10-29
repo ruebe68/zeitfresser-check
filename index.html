@@ -123,7 +123,7 @@ details.legal a { color: var(--accent); }
   document.getElementById("foot").textContent = "Rübsteck Consulting · " + t("Deine", "Ihre") + " Antworten bleiben vertraulich und werden nur für die Auswertung genutzt.";
 
   // ---------- Fragen ----------
-  var SECTIONS = ["Start", "Alltag", "Was nervt", "Immer wieder", "Zeit", "Geld", "Kunden", "Team", "Werkzeuge", "Grenzen", "Wunsch"];
+  var SECTIONS = ["Start", "Alltag", "Ablauf", "Was nervt", "Immer wieder", "Zeit", "Geld", "Kunden", "Team", "Werkzeuge", "Grenzen", "Wunsch"];
   var Q = [
     { id: "alltag", sec: 1, type: "text",
       q: t("Beschreib einen ganz normalen Arbeitstag – vor allem das, was neben Deiner eigentlichen Arbeit passiert.", "Beschreiben Sie einen ganz normalen Arbeitstag – vor allem das, was neben Ihrer eigentlichen Arbeit passiert."),
@@ -131,69 +131,96 @@ details.legal a { color: var(--accent); }
     { id: "buerozeit", sec: 1, type: "chips",
       q: t("Wie viele Stunden pro Woche gehen bei Dir für Büro und Organisation drauf?", "Wie viele Stunden pro Woche gehen bei Ihnen für Büro und Organisation drauf?"),
       options: ["unter 5", "5–10", "10–20", "20–30", "über 30"] },
-    { id: "nervt", sec: 2, type: "multi", other: true,
+    { id: "ablauf_hakt", sec: 2, type: "multi", other: true,
+      q: t("Geh Deinen Ablauf einmal von vorn bis hinten durch: Wo hakt es?", "Gehen Sie Ihren Ablauf einmal von vorn bis hinten durch: Wo hakt es?"),
+      hint: t("Tipp die Stellen an, die Zeit kosten, oft schiefgehen oder heute gar nicht erledigt werden.", "Wählen Sie die Stellen, die Zeit kosten, oft schiefgehen oder heute gar nicht erledigt werden."),
+      options: ["Neue Kunden gewinnen", "Anfragen beantworten", "Anmeldung und Verträge", "Termine und Planung", "Die eigentliche Leistung", "Rechnung, Zahlung, Mahnung", "Nachbetreuung und Bewertungen", "Kündigung und Rückgewinnung", "Einkauf und Material", "Team und Lohn"] },
+    { id: "ablauf_warum", sec: 2, type: "text",
+      q: t("Nimm die Stelle, die am meisten hakt: Warum ist das ein Problem – und was sollte stattdessen am Ende herauskommen?", "Nehmen Sie die Stelle, die am meisten hakt: Warum ist das ein Problem – und was sollte stattdessen am Ende herauskommen?"),
+      hint: t("Zum Beispiel: „Freie Plätze bleiben wochenlang leer, weil ich keine Zeit zum Telefonieren habe. Ich hätte gern, dass der Platz nach zwei Tagen wieder vergeben ist.“", "Zum Beispiel: „Freie Plätze bleiben wochenlang leer, weil keine Zeit zum Telefonieren bleibt. Gewünscht: Der Platz ist nach zwei Tagen wieder vergeben.“") },
+    { id: "nervt", sec: 3, type: "multi", other: true,
       q: t("Was nervt Dich am meisten?", "Was nervt Sie am meisten?"),
       hint: t("Tipp alles an, was passt.", "Wählen Sie alles, was passt."),
       options: ["Telefon und Rückrufe", "E-Mails", "Termine absprechen und verschieben", "Absagen und Ausfälle", "Rechnungen und Mahnungen", "Dienstplan und Vertretung", "Daten abtippen oder übertragen", "Immer gleiche Kundenfragen", "Angebote schreiben", "Social Media", "Ablage und Papierkram", "Behörden und Formulare"] },
-    { id: "nervt_konkret", sec: 2, type: "text",
+    { id: "nervt_konkret", sec: 3, type: "text",
       q: t("Erzähl von der letzten Situation, die Dich richtig genervt hat.", "Erzählen Sie von der letzten Situation, die Sie richtig genervt hat."),
       hint: t("Was ist passiert, wie lange hat es gedauert, was hättest Du lieber gemacht?", "Was ist passiert, wie lange hat es gedauert, was hätten Sie lieber gemacht?") },
-    { id: "aufgaben", sec: 3, type: "tasks",
+    { id: "aufgaben", sec: 4, type: "tasks",
       q: t("Welche Aufgaben machst Du immer wieder gleich?", "Welche Aufgaben erledigen Sie immer wieder gleich?"),
-      hint: t("Bis zu sechs Aufgaben. Schätz grob, wie oft und wie lange – wir rechnen die Stunden pro Jahr aus.", "Bis zu sechs Aufgaben. Schätzen Sie grob, wie oft und wie lange – wir rechnen die Stunden pro Jahr aus.") },
-    { id: "zeitfresser", sec: 4, type: "text",
+      hint: t("Bis zu sechs Aufgaben. Schätz grob, wie oft und wie lange – wir rechnen die Stunden pro Jahr aus. Dazu: wie gern Du sie abgeben würdest und ob es feste Regeln oder Vorlagen dafür gibt.", "Bis zu sechs Aufgaben. Schätzen Sie grob, wie oft und wie lange – wir rechnen die Stunden pro Jahr aus. Dazu: wie gern Sie sie abgeben würden und ob es feste Regeln oder Vorlagen dafür gibt.") },
+    { id: "zeitfresser", sec: 5, type: "text",
       q: t("Was kostet Dich die meiste Zeit, obwohl es eigentlich einfach sein müsste?", "Was kostet Sie die meiste Zeit, obwohl es eigentlich einfach sein müsste?") },
-    { id: "aufschieben", sec: 4, type: "text",
+    { id: "aufschieben", sec: 5, type: "text",
       q: t("Was schiebst Du am liebsten vor Dir her?", "Was schieben Sie am liebsten vor sich her?"),
       hint: t("Das, was am Sonntagabend noch auf der Liste steht.", "Das, was am Sonntagabend noch auf der Liste steht.") },
-    { id: "geld", sec: 5, type: "multi", other: true,
+    { id: "geld", sec: 6, type: "multi", other: true,
       q: t("Wo verlierst Du heute Geld?", "Wo verlieren Sie heute Geld?"),
       options: ["Leere Plätze oder Termine", "Kunden, die nicht erscheinen", "Anfragen, auf die keiner rechtzeitig antwortet", "Offene oder späte Zahlungen", "Kündigungen, die man hätte verhindern können", "Fehler und Nacharbeit", "Überstunden", "Zu wenig Bewertungen und Sichtbarkeit"] },
-    { id: "mehr_raus", sec: 5, type: "text",
+    { id: "mehr_raus", sec: 6, type: "text",
       q: t("Wo könntest Du mehr rausholen, wenn Du mehr Zeit hättest?", "Wo könnten Sie mehr herausholen, wenn Sie mehr Zeit hätten?"),
       hint: t("Ein neues Angebot, mehr Kunden, höhere Preise, ein zweiter Standort …", "Ein neues Angebot, mehr Kunden, höhere Preise, ein zweiter Standort …") },
-    { id: "kanaele", sec: 6, type: "multi", other: true,
+    { id: "kanaele", sec: 7, type: "multi", other: true,
       q: t("Wie melden sich Kunden und Interessenten bei Dir?", "Wie melden sich Kunden und Interessenten bei Ihnen?"),
       options: ["Telefon", "E-Mail", "WhatsApp", "Formular auf der Website", "Instagram oder Facebook", "Persönlich vor Ort"] },
-    { id: "anfragen_woche", sec: 6, type: "chips",
+    { id: "anfragen_woche", sec: 7, type: "chips",
       q: t("Wie viele Anfragen bekommst Du ungefähr pro Woche?", "Wie viele Anfragen bekommen Sie ungefähr pro Woche?"),
       options: ["unter 10", "10–30", "30–60", "60–100", "über 100"] },
-    { id: "fragen_immer", sec: 6, type: "text",
+    { id: "fragen_immer", sec: 7, type: "text",
       q: t("Welche Fragen hörst Du immer wieder?", "Welche Fragen hören Sie immer wieder?"),
       hint: t("Zum Beispiel: Was kostet das? Ist noch ein Platz frei? Wo kann ich parken?", "Zum Beispiel: Was kostet das? Ist noch ein Platz frei? Wo kann ich parken?") },
-    { id: "ausfall", sec: 7, type: "text",
+    { id: "ausfall", sec: 8, type: "text",
       q: t("Was bleibt liegen, wenn Du eine Woche krank bist?", "Was bleibt liegen, wenn Sie eine Woche krank sind?") },
-    { id: "team", sec: 7, type: "chips",
+    { id: "team", sec: 8, type: "chips",
       q: t("Wie viele Menschen arbeiten mit Dir zusammen?", "Wie viele Menschen arbeiten mit Ihnen zusammen?"),
       options: ["Ich allein", "2–5", "6–15", "16–50", "über 50"] },
-    { id: "team_aufwand", sec: 7, type: "text",
+    { id: "team_aufwand", sec: 8, type: "text",
       q: t("Was kostet Dich rund ums Team Zeit?", "Was kostet Sie rund ums Team Zeit?"),
       hint: t("Dienstplan, Vertretung, Stunden erfassen, Infos weitergeben …", "Dienstplan, Vertretung, Stunden erfassen, Infos weitergeben …") },
-    { id: "werkzeuge", sec: 8, type: "multi", other: true,
+    { id: "dabei", sec: 8, type: "text",
+      q: t("Wer kennt die Abläufe außer Dir gut und sollte beim Workshop dabei sein?", "Wer kennt die Abläufe außer Ihnen gut und sollte beim Workshop dabei sein?"),
+      hint: t("Zwei bis drei Personen reichen. Die Rolle genügt, zum Beispiel „Büro“ oder „erfahrene Kursleiterin“.", "Zwei bis drei Personen reichen. Die Rolle genügt, zum Beispiel „Büro“ oder „Teamleitung“.") },
+    { id: "werkzeuge", sec: 9, type: "multi", other: true,
       q: t("Mit welchen Programmen arbeitest Du?", "Mit welchen Programmen arbeiten Sie?"),
       hint: t("Tipp alles an, was passt. Auf der nächsten Seite fragen wir nach den Namen.", "Wählen Sie alles, was passt. Auf der nächsten Seite fragen wir nach den Namen."),
       options: ["Google (Gmail, Drive, Tabellen)", "Microsoft 365 (Outlook, Excel)", "Airtable", "WhatsApp Business", "Kalender- oder Buchungs-App", "Kassensystem", "Buchhaltungsprogramm", "Online-Banking", "Lohn- oder Dienstplan-Programm", "Branchensoftware", "Website mit Formularen", "Vieles auf Papier"] },
-    { id: "programme_genau", sec: 8, type: "text",
+    { id: "programme_genau", sec: 9, type: "text",
       q: t("Welche Programme und Apps genau – und wofür?", "Welche Programme und Apps genau – und wofür?"),
       hint: t("Die Namen helfen uns sehr. Zum Beispiel: Eversports für Buchungen, DATEV für die Buchhaltung, Excel für den Dienstplan. Schreib auch dazu, wo Du dieselben Daten zweimal eintippst.", "Die Namen helfen uns sehr. Zum Beispiel: Eversports für Buchungen, DATEV für die Buchhaltung, Excel für den Dienstplan. Schreiben Sie auch dazu, wo Sie dieselben Daten zweimal eintippen.") },
-    { id: "daten", sec: 9, type: "multi",
+    { id: "ki_heute", sec: 9, type: "multi", other: true,
+      q: t("Wofür nutzt Du KI heute schon – ganz konkret?", "Wofür nutzen Sie KI heute schon – ganz konkret?"),
+      hint: t("Ein Beispiel sagt mehr als „viel“ oder „wenig“.", "Ein Beispiel sagt mehr als „viel“ oder „wenig“."),
+      options: ["Noch gar nicht", "Texte und Mails formulieren", "Zusammenfassen", "Übersetzen", "Bilder oder Social-Media-Posts", "Recherche", "Feste Abläufe, die automatisch laufen"] },
+    { id: "tool_wunsch", sec: 9, type: "text",
+      q: t("Hast Du schon ein bestimmtes Programm im Kopf, das Du gern hättest? Was soll es Dir am Ende liefern?", "Haben Sie schon ein bestimmtes Programm im Kopf, das Sie gern hätten? Was soll es Ihnen am Ende liefern?"),
+      hint: t("Nicht das Programm zählt, sondern das Ergebnis. Zum Beispiel: „Jeden Montag eine Liste, welche Kurse noch Plätze frei haben.“", "Nicht das Programm zählt, sondern das Ergebnis. Zum Beispiel: „Jeden Montag eine Liste, welche Termine noch frei sind.“") },
+    { id: "daten", sec: 10, type: "multi",
       q: t("Welche Daten kommen in Deinen Abläufen vor?", "Welche Daten kommen in Ihren Abläufen vor?"),
       hint: t("Wichtig für den Datenschutz. Kein Problem – es bestimmt nur, wie wir etwas bauen.", "Wichtig für den Datenschutz. Kein Problem – es bestimmt nur, wie wir etwas bauen."),
       options: ["Namen und Kontaktdaten", "Daten von Kindern", "Gesundheitsangaben", "Bank- und Zahlungsdaten", "Mitarbeiterdaten und Löhne", "Nichts Besonderes"] },
-    { id: "nie_allein", sec: 9, type: "text",
+    { id: "nie_allein", sec: 10, type: "text",
       q: t("Was darf ein digitaler Helfer auf keinen Fall allein entscheiden?", "Was darf ein digitaler Helfer auf keinen Fall allein entscheiden?") },
-    { id: "gern_allein", sec: 9, type: "text",
+    { id: "gern_allein", sec: 10, type: "text",
       q: t("Und was darf er ruhig ganz allein erledigen?", "Und was darf er ruhig ganz allein erledigen?") },
-    { id: "offenheit", sec: 9, type: "scale",
+    { id: "zustimmung", sec: 10, type: "text",
+      q: t("Wer muss außer Dir zustimmen, bevor ein digitaler Helfer eingeführt wird?", "Wer muss außer Ihnen zustimmen, bevor ein digitaler Helfer eingeführt wird?"),
+      hint: t("Zum Beispiel Mitinhaber, Datenschutzbeauftragter, Betriebsrat, Steuerbüro – oder niemand.", "Zum Beispiel Mitinhaber, Geschäftsführung, Datenschutzbeauftragter, Betriebsrat – oder niemand.") },
+    { id: "auswertung_ok", sec: 10, type: "chips",
+      q: t("Darf ich Deine Antworten und unseren Workshop mit KI auswerten – datenschutzkonform und ohne Namen von Kunden?", "Darf ich Ihre Antworten und unseren Workshop mit KI auswerten – datenschutzkonform und ohne Namen von Kunden?"),
+      hint: t("Das spart Dir Zeit, weil ich nicht alles mitschreiben muss. Ein Nein ist völlig in Ordnung.", "Das spart Ihnen Zeit, weil nicht alles mitgeschrieben werden muss. Ein Nein ist völlig in Ordnung."),
+      options: ["Ja, gern", "Ja, aber den Workshop nicht aufzeichnen", "Lieber erst besprechen", "Nein"] },
+    { id: "offenheit", sec: 10, type: "scale",
       q: t("Wie offen bist Du für digitale Helfer im Alltag?", "Wie offen sind Sie für digitale Helfer im Alltag?"),
       ends: ["skeptisch", "sofort los"] },
-    { id: "perfekter_tag", sec: 10, type: "text",
+    { id: "perfekter_tag", sec: 11, type: "text",
       q: t("Wie würde Dein perfekter Arbeitstag aussehen?", "Wie würde Ihr perfekter Arbeitstag aussehen?"),
       hint: t("Was machst Du morgens, was mittags – und was fällt ganz weg?", "Was machen Sie morgens, was mittags – und was fällt ganz weg?") },
-    { id: "zehn_stunden", sec: 10, type: "text",
+    { id: "zehn_stunden", sec: 11, type: "text",
       q: t("Stell Dir vor, Du sparst 10 Stunden pro Woche. Was machst Du mit der Zeit?", "Stellen Sie sich vor, Sie sparen 10 Stunden pro Woche. Was machen Sie mit der Zeit?"),
       hint: t("Mehr Kurse, neue Kunden, Familie, Urlaub – alles ist erlaubt.", "Mehr Kunden, ein neues Angebot, Familie, Urlaub – alles ist erlaubt.") },
-    { id: "wunsch", sec: 10, type: "text",
+    { id: "neuer_mitarbeiter", sec: 11, type: "text",
+      q: t("Morgen fängt bei Dir ein richtig guter Mitarbeiter an, den Du nicht bezahlen musst. Welche drei Aufgaben gibst Du ihm zuerst?", "Morgen fängt bei Ihnen ein richtig guter Mitarbeiter an, den Sie nicht bezahlen müssen. Welche drei Aufgaben geben Sie ihm zuerst?"),
+      hint: t("Ruhig auch Dinge, die heute gar niemand macht.", "Ruhig auch Dinge, die heute gar niemand macht.") },
+    { id: "wunsch", sec: 11, type: "text",
       q: t("Wenn Du eine Sache nie wieder selbst machen müsstest – welche wäre das?", "Wenn Sie eine Sache nie wieder selbst machen müssten – welche wäre das?"),
       hint: t("Die wichtigste Frage. Gern ausführlich.", "Die wichtigste Frage. Gern ausführlich.") }
   ];
@@ -275,8 +302,8 @@ details.legal a { color: var(--accent); }
   function renderStart() {
     screen.appendChild(el("h1", { text: t("Wo geht Deine Zeit hin?", "Wo geht Ihre Zeit hin?") }));
     screen.appendChild(el("p", { text: t(
-      "24 kurze Fragen, etwa 15 bis 20 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Du schreibst, desto genauer sehen wir, wo ein digitaler Helfer Dir wirklich Arbeit abnimmt – und wo nicht.",
-      "24 kurze Fragen, etwa 15 bis 20 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Sie schreiben, desto genauer sehen wir, wo ein digitaler Helfer Ihnen wirklich Arbeit abnimmt – und wo nicht.") }));
+      Q.length + " kurze Fragen, etwa 20 bis 25 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Du schreibst, desto genauer sehen wir, wo ein digitaler Helfer Dir wirklich Arbeit abnimmt – und wo nicht.",
+      Q.length + " kurze Fragen, etwa 20 bis 25 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Sie schreiben, desto genauer sehen wir, wo ein digitaler Helfer Ihnen wirklich Arbeit abnimmt – und wo nicht.") }));
     var plan = el("ol", { class: "plan" });
     SECTIONS.slice(1).forEach(function (s, i) { plan.appendChild(el("li", {}, [el("b", { text: s })])); });
     screen.appendChild(plan);
@@ -350,7 +377,7 @@ details.legal a { color: var(--accent); }
   }
 
   function renderTasks() {
-    if (!state.tasks.length) state.tasks.push({ name: "", freq: "wöchentlich", min: "" });
+    if (!state.tasks.length) state.tasks.push({ name: "", freq: "wöchentlich", min: "", abgeben: "", regeln: "" });
     var wrap = el("div", { class: "tasks" });
     var total = el("div", { class: "total", "aria-live": "polite" });
     function upd() {
@@ -367,6 +394,13 @@ details.legal a { color: var(--accent); }
         Object.keys(FREQ).forEach(function (f) { var o = el("option", { value: f, text: f }); if (f === tk.freq) o.selected = true; freq.appendChild(o); });
         var min = el("input", { type: "number", id: "t-min-" + i, min: "0", step: "5", inputmode: "numeric", placeholder: "Minuten je Mal" });
         min.value = tk.min;
+        // S09: Nutzen (wie gern abgeben) und Umsetzbarkeit (gibt es Regeln/Vorlagen) je Aufgabe
+        var abg = el("select", { id: "t-abg-" + i, "aria-label": "Wie gern abgeben" });
+        ["", "1 – egal", "2", "3", "4", "5 – sofort weg"].forEach(function (v) { var o = el("option", { value: v, text: v || "bitte wählen" }); if (v === (tk.abgeben || "")) o.selected = true; abg.appendChild(o); });
+        var reg = el("select", { id: "t-reg-" + i, "aria-label": "Feste Regeln oder Vorlage" });
+        ["", "ja", "teilweise", "nein, jedes Mal anders"].forEach(function (v) { var o = el("option", { value: v, text: v || "bitte wählen" }); if (v === (tk.regeln || "")) o.selected = true; reg.appendChild(o); });
+        abg.addEventListener("change", function () { tk.abgeben = abg.value; keepLocal(); });
+        reg.addEventListener("change", function () { tk.regeln = reg.value; keepLocal(); });
         var sum = el("div", { class: "sum" });
         function s() { sum.innerHTML = ""; sum.appendChild(el("b", { text: fmt(taskHours(tk)) + " Std./Jahr" })); if (state.tasks.length > 1) sum.appendChild(el("button", { class: "chip", type: "button", style: "margin-left:10px;padding:2px 10px;font-size:13px", text: "entfernen", onclick: function () { state.tasks.splice(i, 1); keepLocal(); draw(); upd(); } })); }
         name.addEventListener("input", function () { tk.name = name.value; keepLocal(); });
@@ -376,10 +410,11 @@ details.legal a { color: var(--accent); }
         wrap.appendChild(el("div", { class: "task" }, [
           el("label", { class: "f", for: "t-name-" + i }, ["Aufgabe " + (i + 1), name]),
           el("div", { class: "row" }, [el("label", { class: "f", for: "t-freq-" + i }, ["Wie oft", freq]), el("label", { class: "f", for: "t-min-" + i }, ["Minuten je Mal", min])]),
+          el("div", { class: "row" }, [el("label", { class: "f", for: "t-abg-" + i }, ["Wie gern abgeben?", abg]), el("label", { class: "f", for: "t-reg-" + i }, ["Feste Regeln/Vorlage?", reg])]),
           sum
         ]));
       });
-      if (state.tasks.length < 6) wrap.appendChild(el("button", { class: "btn ghost", type: "button", onclick: function () { state.tasks.push({ name: "", freq: "wöchentlich", min: "" }); keepLocal(); draw(); } }, ["+ Weitere Aufgabe"]));
+      if (state.tasks.length < 6) wrap.appendChild(el("button", { class: "btn ghost", type: "button", onclick: function () { state.tasks.push({ name: "", freq: "wöchentlich", min: "", abgeben: "", regeln: "" }); keepLocal(); draw(); } }, ["+ Weitere Aufgabe"]));
     }
     draw(); upd();
     screen.appendChild(wrap);
@@ -392,7 +427,7 @@ details.legal a { color: var(--accent); }
     Q.forEach(function (q) {
       if (q.type === "tasks") {
         L.push("• " + q.q);
-        state.tasks.filter(function (tk) { return tk.name; }).forEach(function (tk) { L.push("   - " + tk.name + " · " + tk.freq + " · " + (tk.min || "?") + " Min. · ≈ " + fmt(taskHours(tk)) + " Std./Jahr"); });
+        state.tasks.filter(function (tk) { return tk.name; }).forEach(function (tk) { L.push("   - " + tk.name + " · " + tk.freq + " · " + (tk.min || "?") + " Min. · ≈ " + fmt(taskHours(tk)) + " Std./Jahr" + (tk.abgeben ? " · abgeben: " + tk.abgeben : "") + (tk.regeln ? " · Regeln/Vorlage: " + tk.regeln : "")); });
         L.push("   Summe ≈ " + fmt(totalHours()) + " Std./Jahr", "");
         return;
       }
@@ -411,6 +446,15 @@ details.legal a { color: var(--accent); }
     screen.appendChild(el("p", { text: t(
       "Ich werte Deine Antworten aus und zeige Dir im nächsten Gespräch, wo ein digitaler Helfer am meisten bringt – und wo es sich nicht lohnt.",
       "Ich werte Ihre Antworten aus und zeige Ihnen im nächsten Gespräch, wo ein digitaler Helfer am meisten bringt – und wo es sich nicht lohnt.") }));
+    screen.appendChild(el("p", {}, [el("b", { text: "So geht es weiter" })]));
+    var steps = el("ol", { class: "plan" });
+    [t("Ich werte Deine Antworten aus und bereite Ideen vor – als Vorschläge, nicht als fertige Entscheidung.", "Ich werte Ihre Antworten aus und bereite Ideen vor – als Vorschläge, nicht als fertige Entscheidung."),
+     t("Im Workshop sammeln wir gemeinsam weitere Ideen und bewerten sie: Wie viel bringt es? Wie leicht ist es umzusetzen?", "Im Workshop sammeln wir gemeinsam weitere Ideen und bewerten sie: Wie viel bringt es? Wie leicht ist es umzusetzen?"),
+     t("Du entscheidest, was zuerst kommt. Wir starten mit einem einfachen Helfer, der schnell spürbar entlastet.", "Sie entscheiden, was zuerst kommt. Wir starten mit einem einfachen Helfer, der schnell spürbar entlastet."),
+     t("Am Ende steht ein Fahrplan: wer was bis wann erledigt und wann wir uns wieder abstimmen.", "Am Ende steht ein Fahrplan: wer was bis wann erledigt und wann wir uns wieder abstimmen.")
+    ].forEach(function (x) { steps.appendChild(el("li", { text: x })); });
+    screen.appendChild(steps);
+
     var msg = el("p", { class: "err", "aria-live": "polite" });
     var send = el("button", { class: "btn primary", type: "button", onclick: function () {
       state.status = "abgeschickt";

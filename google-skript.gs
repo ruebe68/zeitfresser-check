@@ -10,16 +10,21 @@ const SPALTEN = [
   ['Firma', 'firma'], ['Name', 'person'], ['Rolle', 'rolle'], ['Branche', 'branche'], ['Anrede', 'anrede'],
   ['Stunden pro Jahr (Wiederholungen)', 'stundenProJahr'], ['Schritt', 'schritt'],
   ['Arbeitstag', 'a.alltag'], ['Bürozeit pro Woche', 'a.buerozeit'],
+  ['Wo hakt der Ablauf', 'a.ablauf_hakt'], ['Warum und gewünschtes Ergebnis', 'a.ablauf_warum'],
   ['Was nervt', 'a.nervt'], ['Letzte nervige Situation', 'a.nervt_konkret'],
   ['Wiederkehrende Aufgaben', '_aufgaben'],
   ['Größter Zeitfresser', 'a.zeitfresser'], ['Wird aufgeschoben', 'a.aufschieben'],
   ['Wo geht Geld verloren', 'a.geld'], ['Wo mehr rausholen', 'a.mehr_raus'],
   ['Kanäle', 'a.kanaele'], ['Anfragen pro Woche', 'a.anfragen_woche'], ['Immer gleiche Fragen', 'a.fragen_immer'],
   ['Was bleibt liegen bei Ausfall', 'a.ausfall'], ['Teamgröße', 'a.team'], ['Aufwand ums Team', 'a.team_aufwand'],
+  ['Wer soll zum Workshop', 'a.dabei'],
   ['Programme', 'a.werkzeuge'], ['Programme genau', 'a.programme_genau'],
+  ['KI heute', 'a.ki_heute'], ['Programm-Wunsch und Ergebnis', 'a.tool_wunsch'],
   ['Daten in den Abläufen', 'a.daten'],
-  ['Nie allein', 'a.nie_allein'], ['Gern allein', 'a.gern_allein'], ['Offenheit (1–5)', 'a.offenheit'],
+  ['Nie allein', 'a.nie_allein'], ['Gern allein', 'a.gern_allein'],
+  ['Wer muss zustimmen', 'a.zustimmung'], ['KI-Auswertung erlaubt', 'a.auswertung_ok'], ['Offenheit (1–5)', 'a.offenheit'],
   ['Perfekter Arbeitstag', 'a.perfekter_tag'], ['Mit 10 Stunden mehr', 'a.zehn_stunden'],
+  ['Drei Aufgaben für neuen Mitarbeiter', 'a.neuer_mitarbeiter'],
   ['Nie wieder selbst machen', 'a.wunsch']
 ];
 
@@ -71,7 +76,8 @@ function wert(p, titel) {
   if (feld === '_eingang') return '';
   if (feld === '_aufgaben') {
     v = (p.aufgaben || []).filter(function (t) { return t && t.name; }).map(function (t) {
-      return '• ' + t.name + ' · ' + t.freq + ' · ' + (t.min || '?') + ' Min.';
+      return '• ' + t.name + ' · ' + t.freq + ' · ' + (t.min || '?') + ' Min.'
+        + (t.abgeben ? ' · abgeben: ' + t.abgeben : '') + (t.regeln ? ' · Regeln/Vorlage: ' + t.regeln : '');
     }).join('\n');
   } else if (feld.indexOf('a.') === 0) {
     v = (p.antworten || {})[feld.slice(2)];
