@@ -177,8 +177,8 @@ details.legal a { color: var(--accent); }
       q: t("Was kostet Dich rund ums Team Zeit?", "Was kostet Sie rund ums Team Zeit?"),
       hint: t("Dienstplan, Vertretung, Stunden erfassen, Infos weitergeben …", "Dienstplan, Vertretung, Stunden erfassen, Infos weitergeben …") },
     { id: "dabei", sec: 8, type: "text",
-      q: t("Wer kennt die Abläufe außer Dir gut und sollte beim Workshop dabei sein?", "Wer kennt die Abläufe außer Ihnen gut und sollte beim Workshop dabei sein?"),
-      hint: t("Zwei bis drei Personen reichen. Die Rolle genügt, zum Beispiel „Büro“ oder „erfahrene Kursleiterin“.", "Zwei bis drei Personen reichen. Die Rolle genügt, zum Beispiel „Büro“ oder „Teamleitung“.") },
+      q: t("Wer kennt die Abläufe außer Dir gut und könnte bei Rückfragen helfen?", "Wer kennt die Abläufe außer Ihnen gut und könnte bei Rückfragen helfen?"),
+      hint: t("Ein bis drei Personen reichen. Die Rolle genügt, zum Beispiel „Büro“ oder „erfahrene Kursleiterin“.", "Ein bis drei Personen reichen. Die Rolle genügt, zum Beispiel „Büro“ oder „Teamleitung“.") },
     { id: "werkzeuge", sec: 9, type: "multi", other: true,
       q: t("Mit welchen Programmen arbeitest Du?", "Mit welchen Programmen arbeiten Sie?"),
       hint: t("Tipp alles an, was passt. Auf der nächsten Seite fragen wir nach den Namen.", "Wählen Sie alles, was passt. Auf der nächsten Seite fragen wir nach den Namen."),
@@ -205,9 +205,9 @@ details.legal a { color: var(--accent); }
       q: t("Wer muss außer Dir zustimmen, bevor ein digitaler Helfer eingeführt wird?", "Wer muss außer Ihnen zustimmen, bevor ein digitaler Helfer eingeführt wird?"),
       hint: t("Zum Beispiel Mitinhaber, Datenschutzbeauftragter, Betriebsrat, Steuerbüro – oder niemand.", "Zum Beispiel Mitinhaber, Geschäftsführung, Datenschutzbeauftragter, Betriebsrat – oder niemand.") },
     { id: "auswertung_ok", sec: 10, type: "chips",
-      q: t("Darf ich Deine Antworten und unseren Workshop mit KI auswerten – datenschutzkonform und ohne Namen von Kunden?", "Darf ich Ihre Antworten und unseren Workshop mit KI auswerten – datenschutzkonform und ohne Namen von Kunden?"),
+      q: t("Darf ich Deine Antworten und unser Telefonat mit KI auswerten – datenschutzkonform und ohne Namen von Kunden?", "Darf ich Ihre Antworten und unser Telefonat mit KI auswerten – datenschutzkonform und ohne Namen von Kunden?"),
       hint: t("Das spart Dir Zeit, weil ich nicht alles mitschreiben muss. Ein Nein ist völlig in Ordnung.", "Das spart Ihnen Zeit, weil nicht alles mitgeschrieben werden muss. Ein Nein ist völlig in Ordnung."),
-      options: ["Ja, gern", "Ja, aber den Workshop nicht aufzeichnen", "Lieber erst besprechen", "Nein"] },
+      options: ["Ja, gern", "Ja, aber das Telefonat nicht aufzeichnen", "Lieber erst besprechen", "Nein"] },
     { id: "offenheit", sec: 10, type: "scale",
       q: t("Wie offen bist Du für digitale Helfer im Alltag?", "Wie offen sind Sie für digitale Helfer im Alltag?"),
       ends: ["skeptisch", "sofort los"] },
@@ -448,8 +448,8 @@ details.legal a { color: var(--accent); }
       "Ich werte Ihre Antworten aus und zeige Ihnen im nächsten Gespräch, wo ein digitaler Helfer am meisten bringt – und wo es sich nicht lohnt.") }));
     screen.appendChild(el("p", {}, [el("b", { text: "So geht es weiter" })]));
     var steps = el("ol", { class: "plan" });
-    [t("Ich werte Deine Antworten aus und bereite Ideen vor – als Vorschläge, nicht als fertige Entscheidung.", "Ich werte Ihre Antworten aus und bereite Ideen vor – als Vorschläge, nicht als fertige Entscheidung."),
-     t("Im Workshop sammeln wir gemeinsam weitere Ideen und bewerten sie: Wie viel bringt es? Wie leicht ist es umzusetzen?", "Im Workshop sammeln wir gemeinsam weitere Ideen und bewerten sie: Wie viel bringt es? Wie leicht ist es umzusetzen?"),
+    [t("Ich werte Deine Antworten aus und erarbeite konkrete Lösungsvorschläge – als Vorschläge, nicht als fertige Entscheidung.", "Ich werte Ihre Antworten aus und erarbeite konkrete Lösungsvorschläge – als Vorschläge, nicht als fertige Entscheidung."),
+     t("Dann rufe ich Dich an, und wir gehen die Vorschläge gemeinsam durch: Wie viel bringt es? Wie leicht ist es umzusetzen?", "Dann rufe ich Sie an, und wir gehen die Vorschläge gemeinsam durch: Wie viel bringt es? Wie leicht ist es umzusetzen?"),
      t("Du entscheidest, was zuerst kommt. Wir starten mit einem einfachen Helfer, der schnell spürbar entlastet.", "Sie entscheiden, was zuerst kommt. Wir starten mit einem einfachen Helfer, der schnell spürbar entlastet."),
      t("Am Ende steht ein Fahrplan: wer was bis wann erledigt und wann wir uns wieder abstimmen.", "Am Ende steht ein Fahrplan: wer was bis wann erledigt und wann wir uns wieder abstimmen.")
     ].forEach(function (x) { steps.appendChild(el("li", { text: x })); });
