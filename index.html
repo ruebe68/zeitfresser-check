@@ -235,7 +235,7 @@ details.legal a { color: var(--accent); }
 
   // ---------- Speichern (Google-Tabelle) ----------
   // Web-App-Adresse des Google-Skripts (endet auf /exec). Leer = nur Kopieren am Ende.
-  var ENDPOINT = "";
+  var ENDPOINT = "https://script.google.com/macros/s/AKfycbzFRgwFNOx9jGOoifrWXh63FtlotbB2cU6mjKztE5Htvyz0yds10mrkM1Fk7hcX9AgFPQ/exec";
   var db = !!ENDPOINT, chain = Promise.resolve(), lastSaved = "";
   if (!state.sid) { state.sid = "b-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10); keepLocal(); }
   var savedEl = document.getElementById("saved");
