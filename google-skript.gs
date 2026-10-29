@@ -22,7 +22,7 @@ const SPALTEN = [
   ['KI heute', 'a.ki_heute'], ['Programm-Wunsch und Ergebnis', 'a.tool_wunsch'],
   ['Daten in den Abläufen', 'a.daten'],
   ['Nie allein', 'a.nie_allein'], ['Gern allein', 'a.gern_allein'],
-  ['Wer muss zustimmen', 'a.zustimmung'], ['KI-Auswertung erlaubt', 'a.auswertung_ok'], ['Offenheit (1–5)', 'a.offenheit'],
+  ['KI-Auswertung erlaubt', 'a.auswertung_ok'], ['Offenheit (1–5)', 'a.offenheit'],
   ['Perfekter Arbeitstag', 'a.perfekter_tag'], ['Mit 10 Stunden mehr', 'a.zehn_stunden'],
   ['Drei Aufgaben für neuen Mitarbeiter', 'a.neuer_mitarbeiter'],
   ['Nie wieder selbst machen', 'a.wunsch']
