@@ -16,7 +16,8 @@ const SPALTEN = [
   ['Wo geht Geld verloren', 'a.geld'], ['Wo mehr rausholen', 'a.mehr_raus'],
   ['Kanäle', 'a.kanaele'], ['Anfragen pro Woche', 'a.anfragen_woche'], ['Immer gleiche Fragen', 'a.fragen_immer'],
   ['Was bleibt liegen bei Ausfall', 'a.ausfall'], ['Teamgröße', 'a.team'], ['Aufwand ums Team', 'a.team_aufwand'],
-  ['Programme', 'a.werkzeuge'], ['Daten in den Abläufen', 'a.daten'],
+  ['Programme', 'a.werkzeuge'], ['Programme genau', 'a.programme_genau'],
+  ['Daten in den Abläufen', 'a.daten'],
   ['Nie allein', 'a.nie_allein'], ['Gern allein', 'a.gern_allein'], ['Offenheit (1–5)', 'a.offenheit'],
   ['Perfekter Arbeitstag', 'a.perfekter_tag'], ['Mit 10 Stunden mehr', 'a.zehn_stunden'],
   ['Nie wieder selbst machen', 'a.wunsch']

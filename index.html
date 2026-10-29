@@ -171,7 +171,11 @@ details.legal a { color: var(--accent); }
       hint: t("Dienstplan, Vertretung, Stunden erfassen, Infos weitergeben …", "Dienstplan, Vertretung, Stunden erfassen, Infos weitergeben …") },
     { id: "werkzeuge", sec: 8, type: "multi", other: true,
       q: t("Mit welchen Programmen arbeitest Du?", "Mit welchen Programmen arbeiten Sie?"),
-      options: ["Google (Gmail, Drive, Tabellen)", "Microsoft 365 (Outlook, Excel)", "Airtable", "WhatsApp Business", "Buchhaltungsprogramm", "Branchensoftware", "Website mit Formularen", "Vieles auf Papier"] },
+      hint: t("Tipp alles an, was passt. Auf der nächsten Seite fragen wir nach den Namen.", "Wählen Sie alles, was passt. Auf der nächsten Seite fragen wir nach den Namen."),
+      options: ["Google (Gmail, Drive, Tabellen)", "Microsoft 365 (Outlook, Excel)", "Airtable", "WhatsApp Business", "Kalender- oder Buchungs-App", "Kassensystem", "Buchhaltungsprogramm", "Online-Banking", "Lohn- oder Dienstplan-Programm", "Branchensoftware", "Website mit Formularen", "Vieles auf Papier"] },
+    { id: "programme_genau", sec: 8, type: "text",
+      q: t("Welche Programme und Apps genau – und wofür?", "Welche Programme und Apps genau – und wofür?"),
+      hint: t("Die Namen helfen uns sehr. Zum Beispiel: Eversports für Buchungen, DATEV für die Buchhaltung, Excel für den Dienstplan. Schreib auch dazu, wo Du dieselben Daten zweimal eintippst.", "Die Namen helfen uns sehr. Zum Beispiel: Eversports für Buchungen, DATEV für die Buchhaltung, Excel für den Dienstplan. Schreiben Sie auch dazu, wo Sie dieselben Daten zweimal eintippen.") },
     { id: "daten", sec: 9, type: "multi",
       q: t("Welche Daten kommen in Deinen Abläufen vor?", "Welche Daten kommen in Ihren Abläufen vor?"),
       hint: t("Wichtig für den Datenschutz. Kein Problem – es bestimmt nur, wie wir etwas bauen.", "Wichtig für den Datenschutz. Kein Problem – es bestimmt nur, wie wir etwas bauen."),
@@ -271,8 +275,8 @@ details.legal a { color: var(--accent); }
   function renderStart() {
     screen.appendChild(el("h1", { text: t("Wo geht Deine Zeit hin?", "Wo geht Ihre Zeit hin?") }));
     screen.appendChild(el("p", { text: t(
-      "23 kurze Fragen, etwa 15 bis 20 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Du schreibst, desto genauer sehen wir, wo ein digitaler Helfer Dir wirklich Arbeit abnimmt – und wo nicht.",
-      "23 kurze Fragen, etwa 15 bis 20 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Sie schreiben, desto genauer sehen wir, wo ein digitaler Helfer Ihnen wirklich Arbeit abnimmt – und wo nicht.") }));
+      "24 kurze Fragen, etwa 15 bis 20 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Du schreibst, desto genauer sehen wir, wo ein digitaler Helfer Dir wirklich Arbeit abnimmt – und wo nicht.",
+      "24 kurze Fragen, etwa 15 bis 20 Minuten. Es gibt keine falschen Antworten. Je ehrlicher Sie schreiben, desto genauer sehen wir, wo ein digitaler Helfer Ihnen wirklich Arbeit abnimmt – und wo nicht.") }));
     var plan = el("ol", { class: "plan" });
     SECTIONS.slice(1).forEach(function (s, i) { plan.appendChild(el("li", {}, [el("b", { text: s })])); });
     screen.appendChild(plan);
